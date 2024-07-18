@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Safety PPE Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Nanas</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('nanas') }}">Upload Video</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Safety PPE</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('front') }}">Upload Video</a>
+                        <a href="{{ url_for('webcam') }}">Webcam</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Safety PPE Detection</h1>
+
+        <section id="upload" class="content">
+            <h2>Upload Video</h2>
+            <form method="POST" action="{{ url_for('process_video') }}" enctype="multipart/form-data">
+                <input type="file" name="file" class="custom-file-input">
+                <button type="submit">Process Video</button>
+            </form>
+        </section>
+
+        {% if session.get('processed_video_path') %}
+        <section id="output" class="content">
+            <h2>Output Video</h2>
+            <div class="video-container">
+                <img src="{{ url_for('video') }}" alt="Processed Video">
+            </div>
+            <div class="download-container">
+                <a href="{{ url_for('download_video') }}" class="download-btn">Download Processed Video</a>
+            </div>
+        </section>
+        {% endif %}
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %} {% endif %} {% endwith %}
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Detection using YOLOv8</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .feature-box {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .top {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .second {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        h1 {
+            margin: 0;
+        }
+        
+        .section {
+            margin-top: 20px;
+        }
+        
+        .custom-file-input {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="feature-box top">
+        <h1>Object Detection using YOLOv8</h1>
+        <h1>Output Video</h1>
+    </div>
+
+    <div class="feature-box second">
+        <h1>Output Video</h1>
+    </div>
+
+    <div class="section">
+        <img src="{{ url_for('video') }}" alt="Output Video">
+    </div>
+
+    <div class="section">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }} {{ form.file(class="custom-file-input") }}
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+</body>
+
+</html>

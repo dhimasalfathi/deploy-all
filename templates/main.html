@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML Models</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        
+        .button {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 15px;
+            text-align: center;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Nanas</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('nanas') }}">Upload Video</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Safety PPE</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('front') }}">Upload Video</a>
+                        <a href="{{ url_for('webcam') }}">Webcam</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <h1>AI/ML Models</h1>
+            <a href="{{ url_for('nanas') }}" class="card">
+                <img src="{{ url_for('static', filename='pineapple.png') }}" alt="Pineapple Object Counting">
+                <div>Pineapple Object Counting</div>
+            </a>
+            <a href="{{ url_for('front') }}" class="card">
+                <img src="{{ url_for('static', filename='vest.png') }}" alt="PPE Safety Detection">
+                <div>PPE Safety Detection</div>
+            </a>
+        </div>
+    </main>
+</body>
+
+</html>

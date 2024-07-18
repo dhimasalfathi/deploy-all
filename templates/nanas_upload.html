@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanas Object Counting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Nanas</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('nanas') }}">Upload Video</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Safety PPE</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('front') }}">Upload Video</a>
+                        <a href="{{ url_for('webcam') }}">Webcam</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h1>Video Processor</h1>
+            <form id="upload-form" enctype="multipart/form-data">
+                <input type="file" name="video" accept="video/*" required>
+                <button type="submit">Upload and Process</button>
+            </form>
+            <div class="loading"></div>
+        </div>
+        <div class="card" id="video-container" style="display: none;">
+            <video id="processed-video" controls></video>
+            <a id="download-button" href="" download="processed_video.mp4" class="button">Download Processed Video</a>
+            <button id="watch-button" onclick="watchVideo()">Watch Processed Video</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const loading = document.querySelector('.loading');
+            const videoContainer = document.getElementById('video-container');
+
+            loading.style.display = 'block';
+            videoContainer.style.display = 'none';
+
+            fetch('/process_video_nanas', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const downloadButton = document.getElementById('download-button');
+                    const watchButton = document.getElementById('watch-button');
+                    const processedVideo = document.getElementById('processed-video');
+
+                    downloadButton.href = data.processed_video;
+                    watchButton.dataset.videoSrc = data.processed_video.replace('/download/', '/watch/');
+
+                    downloadButton.style.display = 'block';
+                    watchButton.style.display = 'block';
+                    processedVideo.style.display = 'none';
+                    videoContainer.style.display = 'block';
+                    loading.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loading.style.display = 'none';
+                });
+        });
+
+        function watchVideo() {
+            const watchButton = document.getElementById('watch-button');
+            const processedVideo = document.getElementById('processed-video');
+            processedVideo.src = watchButton.dataset.videoSrc;
+            processedVideo.style.display = 'block';
+            processedVideo.load();
+        }
+    </script>
+</body>
+
+</html>

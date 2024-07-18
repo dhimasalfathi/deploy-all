@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cam Safety PPE Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Nanas</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('nanas') }}">Upload Video</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Safety PPE</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('front') }}">Upload Video</a>
+                        <a href="{{ url_for('webcam') }}">Webcam</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Safety PPE Detection</h1>
+
+        {% if active_page == "home" %}
+        <section id="home" class="content">
+            <h2>Welcome to our Object Detection App</h2>
+            <p>Use our advanced AI to detect objects in videos or through your webcam.</p>
+        </section>
+        {% elif active_page == "webcam" %}
+        <section id="webcam" class="content">
+            <h2>Webcam Object Detection</h2>
+            <div id="webcam-container">
+                <img src="{{ url_for('webapp') }}" alt="Webcam stream">
+            </div>
+        </section>
+        {% endif %}
+    </main>
+
+
+</body>
+
+</html>
