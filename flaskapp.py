@@ -74,27 +74,36 @@ def callback(
     trace_annotator,
     line_zone_annotator,
 ) -> np.ndarray:
-    results = model.predict(frame, conf=0.6, device=0, verbose=False)[0]
+    results = model.predict(frame, conf=0.2, device="cpu", verbose=False)[0]
     detections = sv.Detections.from_ultralytics(results)
     detections = detections[np.isin(detections.class_id, selected_classes)]
 
     detections = byte_tracker.update_with_detections(detections)
 
-    if not detections:
-        return frame
+    annotated_frame = frame.copy()
 
-    labels = [
-        f"#{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
-        for confidence, class_id, tracker_id in zip(
-            detections.confidence,
-            detections.class_id,
-            detections.tracker_id,
-        )
-    ]
-    annotated_frame = trace_annotator.annotate(scene=frame, detections=detections)
-    annotated_frame = box_annotator.annotate(
-        scene=annotated_frame, detections=detections
-    )
+    if detections and len(detections.tracker_id) > 0:
+        labels = [
+            f"#{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
+            for confidence, class_id, tracker_id in zip(
+                detections.confidence,
+                detections.class_id,
+                detections.tracker_id,
+            )
+        ]
+
+        try:
+            annotated_frame = trace_annotator.annotate(
+                scene=annotated_frame, detections=detections
+            )
+            annotated_frame = box_annotator.annotate(
+                scene=annotated_frame, detections=detections
+            )
+        except IndexError:
+            print(
+                f"Error annotating frame {index}. Skipping annotations for this frame."
+            )
+
     line_zone.trigger(detections)
     return line_zone_annotator.annotate(annotated_frame, line_counter=line_zone)
 
@@ -307,4 +316,4 @@ def watch_file(filename):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000)
