@@ -354,7 +354,7 @@ def process_frame():
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     # Process the image with YOLOv8
-    results = modelppe(img, conf=0.6, stream=True, device=0)
+    results = modelppe(img, conf=0.6, stream=True, device="cpu")
 
     # Convert the results to a list of dictionaries
     detections = []
