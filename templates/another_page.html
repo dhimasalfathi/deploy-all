@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>Another Page</title>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Nanas</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('nanas') }}">Upload Video</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Safety PPE</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('front') }}">Upload Video</a>
+                        <a href="{{ url_for('webcam') }}">Webcam</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <h1>Another Page</h1>
+    <p>You've navigated away from the prediction page.</p>
+    <a href="/">Go back to prediction</a>
+</body>
+
+</html>

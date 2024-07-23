@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLOv8 Webcam Detection</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+        
+        #video,
+        #canvas {
+            margin-bottom: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Nanas</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('nanas') }}">Upload Video</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Safety PPE</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('front') }}">Upload Video</a>
+                        <a href="{{ url_for('webcam') }}">Webcam</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="center-container">
+        <h1>Safety PPE Webcam Detection</h1>
+        <div style="position: relative;">
+            <video id="video" width="640" height="480" autoplay></video>
+            <canvas id="canvas" width="640" height="480" style="position: absolute; top: 0; left: 0;"></canvas>
+        </div>
+        <a href="/another_page">Go to Another Page</a>
+    </div>
+
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let predictionInterval;
+
+        navigator.mediaDevices.getUserMedia({
+                video: true
+            })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Error accessing the webcam", err);
+            });
+
+        function captureFrame() {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            $.ajax({
+                url: '/process_frame',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    image: imageData
+                }),
+                success: function(response) {
+                    displayResults(response);
+                    drawBoundingBoxes(response);
+                }
+            });
+        }
+
+        function displayResults(results) {
+            $('#results').html(JSON.stringify(results, null, 2));
+        }
+
+        function drawBoundingBoxes(detections) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            detections.forEach(detection => {
+                const [x, y, w, h] = detection.box;
+                ctx.strokeStyle = '#00FF00';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, w, h);
+
+                ctx.fillStyle = '#00FF00';
+                ctx.font = '16px Arial';
+                ctx.fillText(`${detection.name} ${(detection.confidence * 100).toFixed(2)}%`, x, y - 10);
+            });
+        }
+
+        // Start predictions when the page loads
+        window.addEventListener('load', function() {
+            predictionInterval = setInterval(captureFrame, 250); // Capture and process a frame every second
+        });
+
+        // Stop predictions when navigating away
+        window.addEventListener('beforeunload', function() {
+            clearInterval(predictionInterval);
+        });
+    </script>
+</body>
+
+</html>

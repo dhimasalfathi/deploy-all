@@ -1,3 +1,4 @@
+import base64
 from flask import (
     Flask,
     flash,
@@ -42,6 +43,8 @@ HOME = os.getcwd()
 PROCESSED_DIR = os.path.join(HOME, "processed")
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 MODEL_PATH = "bestnew.pt"
+modelppe = YOLO("YOLO-Weights/ppe.pt")
+
 selected_classes = [0]  # Class ids of interest
 
 # Initial Setup
@@ -64,6 +67,30 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "muhammadmoin"
 app.config["UPLOAD_FOLDER"] = "static/files"
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+CLASSES_TO_DETECT = [
+    5,
+    6,
+    7,
+    9,
+    12,
+    13,
+    14,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+]  # Adjust this list based on your needs
 
 
 def callback(
@@ -148,9 +175,9 @@ def home():
 # Use 'app.route()' method, to render the Webcam page at "/webcam"
 
 
-@app.route("/webcam")
-def webcam():
-    return render_template("webcam_upload.html", active_page="webcam")
+# @app.route("/webcam")
+# def webcam():
+#     return render_template("webcam_upload.html", active_page="webcam")
 
 
 @app.route("/FrontPage", methods=["GET", "POST"])
@@ -303,6 +330,54 @@ def process_video_nanas():
     return jsonify(
         {"processed_video": url_for("download_file", filename=processed_filename)}
     )
+
+
+@app.route("/webcam")
+def webcam():
+    return render_template("cam_ppe.html")
+
+
+@app.route("/another_page")
+def another_page():
+    return render_template("another_page.html")
+
+
+@app.route("/process_frame", methods=["POST"])
+def process_frame():
+    # Get the base64 encoded image from the request
+    image_data = request.json["image"]
+    # Decode the base64 image
+    image_data = base64.b64decode(image_data.split(",")[1])
+    # Convert to numpy array
+    nparr = np.frombuffer(image_data, np.uint8)
+    # Decode image
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    # Process the image with YOLOv8
+    results = modelppe(img, conf=0.6, stream=True, device=0)
+
+    # Convert the results to a list of dictionaries
+    detections = []
+    for r in results:
+        boxes = r.boxes
+        for box in boxes:
+            conf = box.conf.item()
+            cls = int(box.cls.item())
+
+            # Check if the detected class is in our list of classes to detect
+            if cls in CLASSES_TO_DETECT:
+                x1, y1, x2, y2 = box.xyxy[0].tolist()
+                name = modelppe.names[cls]
+                detections.append(
+                    {
+                        "box": [x1, y1, x2 - x1, y2 - y1],  # [x, y, width, height]
+                        "confidence": conf,
+                        "class": cls,
+                        "name": name,
+                    }
+                )
+
+    return jsonify(detections)
 
 
 @app.route("/download/<filename>")

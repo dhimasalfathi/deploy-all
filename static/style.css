@@ -1,5 +1,25 @@
 /* style.css */
 
+#canvas-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+#canvas-container img {
+    width: 50%;
+    height: auto;
+}
+
+#canvas-container {
+    margin-top: 1.5rem;
+}
+
+canvas {
+    border-radius: 4px;
+    max-width: 640px;
+}
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
